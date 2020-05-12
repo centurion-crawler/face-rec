@@ -1,0 +1,280 @@
+﻿<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+    <!-- Required meta tags always come first -->
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+ 
+	<title></title>
+  
+    <!-- Favicon -->
+    <link rel="icon" href="img/favicon.png" type="image/x-icon" />
+    <!--Bootstrap-->
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" media="all" /> 
+    <!--Bootstrap-select CSS-->
+	<link rel="stylesheet" type="text/css" href="vendors/bootstrap-select/bootstrap-select.min.css" media="all" />
+    <!--Flexslider CSS-->
+	<link rel="stylesheet" type="text/css" href="vendors/flexslider/css/flexslider.css" media="all" />
+    <!--Owl_Carousel CSS-->
+	<link rel="stylesheet" type="text/css" href="vendors/owl-carousel/owl.carousel.css" media="all" />
+    <!--Linearicons Icons CSS-->
+	<link rel="stylesheet" href="vendors/linearicons/Linearicons.css"> 
+    <!--Font-Awesome CSS-->
+	<link rel="stylesheet" href="vendors/font-awesome/css/font-awesome.min.css"> 
+	<!-- Fonts -->
+	<link href='http://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic,500,500italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
+	
+    <!--Theme Styles CSS-->
+    <link rel="stylesheet" type="text/css" href="css/style.css" media="all" /> 
+    <script type="text/javascript" src="facepp_sdk/jquery.min.js"></script>
+    <script type="text/javascript" src="facepp_sdk/exif.js"></script>
+    <script type="text/javascript" src="facepp_sdk/facepp_sdk.js"></script>
+    <script type="text/javascript" src="js/common.js"></script>
+    <style>
+        #input1{
+           opacity: 0;
+       }
+   
+       #input2{
+           opacity: 0;
+       }    
+       #text{
+           left: 10%;
+           width: 50%;
+           height: 130px;
+       }
+    </style>   
+    <script>
+    
+        var left_file;
+        var right_file;
+    
+        // 选择照片
+        function selectImage1(input){
+            let imageView = document.getElementById('preview1');
+    
+            const reader = new FileReader();
+    
+            reader.readAsDataURL(input.files[0]);
+    
+            reader.onload = function (e) {
+    
+                //图片的base64数据
+                const base64Image = e.target.result;
+    
+                imageView.src = base64Image;
+    
+                // 以二进制的方式上传图片
+                // 将base64转为二进制
+                left_file = facepp.dataURItoBlob(base64Image);
+                startCompare();
+            }
+        }
+    
+        // 选择照片
+        function selectImage2(input){
+            let imageView = document.getElementById('preview2');
+    
+            const reader = new FileReader();
+    
+            reader.readAsDataURL(input.files[0]);
+    
+            reader.onload = function (e) {
+    
+                //图片的base64数据
+                const base64Image = e.target.result;
+    
+                imageView.src = base64Image;
+    
+                // 以二进制的方式上传图片
+                // 将base64转为二进制
+                right_file = facepp.dataURItoBlob(base64Image);
+    
+                startCompare();
+            }
+        }
+    
+        function startCompare() {
+    
+            if(left_file == null || right_file == null){
+                return;
+            }
+            const param = {"image_file1":left_file,"image_file2":right_file};
+            this.facepp.compareFace(param,handleSuccess,handleError);
+        }
+    
+        //成功的回调
+        function handleSuccess(e) {
+            console.log(e);
+    
+            const confidence = e.confidence;
+            console.log('confidence' + confidence);
+            
+            const maxthreshold = e.thresholds['1e-5'];
+            const minthreshold = e.thresholds['1e-3'];
+    
+            var result = '是否是同一个人: '; //是否是一个人
+    
+            if (confidence >= maxthreshold){
+                result += '可能性高，核验通过！';
+            } else if (confidence <= minthreshold){
+                result += '可能性低，核验不通过！';
+            } else {
+                result += '可能性一般，核验不通过！';
+            }
+            alert("匹配结果："+result);
+            // let resultView = document.getElementById('result');
+            // resultView.innerText = result;
+    
+            let textView = document.getElementById('text');
+            textView.innerText = JSON.stringify(e,null,"\t");
+        }
+        function handleError(e){
+            console.log(e);
+            alert("匹配图片人脸部分尺寸过小！")
+        }
+    </script>
+</head>
+<body> 
+
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="loader-xbox"></div>
+    </div>
+   
+    <!-- Heder_Bottom -->
+    <nav class="navbar navbar-default nav_custom row">
+        <div class="container coustome-container">
+            <!-- Brand and mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main_menu" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand_logo" href="index.html"><img src="img/logo.png" alt="Logo"></a>
+            </div>
+
+            <!-- Collect the nav home, property  -->
+            <div class="row collapse navbar-collapse" id="main_menu">
+                <ul class="nav navbar-nav navbar-menu">
+                    <li><a href="./index.html">首页</a></li>
+                    <li><a href="./compareFace.html">入住识别</a></li>
+                    <li><a href="./points.html">姿态检测</a></li>
+                </ul>
+            </div><!-- End navbar-collapse -->
+        </div> 
+    </nav>  
+    <!-- End Heder_Bottom -->
+    
+     <!-- Banner area -->
+     <section class="banner-area row">
+         <h2>入住识别</h2>
+         <div class="bottom-menu-area">
+             <a href="index.html">首页</a>
+             <i class="lnr lnr-chevron-right"></i>
+             <a href="about_one.html">入住识别</a>
+         </div>
+     </section>
+     <!-- End Banner area -->
+     
+     <!-- Company area -->
+     <section class="company-area row">
+         <div class="container coustome-container">
+             <div class="row company">
+                 <div class="company-ing">
+                     <img src="img/company-img.jpg" alt="">
+                 </div>
+                 <div class="company-content-area">
+                     <h3>关于人脸识别入住</h3>
+                     <p><strong>人脸识别助力酒店安全管理</strong><br> 酒店人脸识别系统，要求旅客必须实名实人实证，人证一致方可入住。以时下热门的厦门云脉人脸识别系统为例，用户在进行实名认证时，需在设备终端放置本人身份证件，系统摄像头将实时捕捉用户现场人脸图像，并将其传送至后台与用户身份证件上的照片比对。若使用非本人身份证件，系统则会出现相应的预警提示，协助酒店人员在第一时间发现安全隐患。
+                        <br><br>
+                        <strong>优化旅客入住体验</strong><br>当前台工作人员进行肉眼比对时，目光不可避免地需要在旅客脸上停留一段时间，难免令人产生抵触心理。而人脸识别的非接触性、非强制性就显得整个验证流程更加自然。且系统验证的速度明显高于人工验证，整个登记流程行云流水，提升旅客入住体验的同时，又能提高酒店前台人员的工作效率。
+                    </p>
+                    
+                </div>
+             </div>
+         </div>
+     </section>
+     <!-- End Company area -->
+  
+
+    <!-- Popular Agents-->
+    <section class="popular-agents-area">
+        <div class="container coustome-container">
+            <div class="row popular-agents">
+				<h2>Demo 演示</h2> 
+               <div class="col-md-3 col-sm-6 container">
+                   <div class="David-Elton">
+                        <input id="input1" type="file"  onchange="selectImage1(this)"/>
+                        <img id="preview1">
+                        <div class="content-area">
+                            <a><div class="button" id="leftbutton" onclick=clickInput1()>现场照片</div></a>	
+                        </div>
+                   </div>
+               </div>
+               <div class="col-md-3 col-sm-6 container">
+                <div class="David-Elton">
+                    <input id="input2" type="file"  onchange="selectImage2(this)"/>
+                    <img id="preview2">
+                    <div class="content-area">
+                         <a><div class="button" id="rightbutton" onclick=clickInput2()>证件照片</div></a>	
+                    </div>
+                </div>
+            </div> 
+            <textarea id="text" readonly="readonly" placeholder="Json返回值"></textarea>
+        </div>
+    </section>
+    <!-- End Popular Agents -->
+ 
+    
+    <!-- Footer Area -->
+    <footer class="footer_area row">
+    	<div class="copy_right">
+    		Copyright &copy; 2020.壹面云生 All rights reserved.
+    	</div>
+    </footer>
+    <!-- End Footer Area -->
+
+	    <!--jQuery JS-->
+    <script src="js/jquery-1.12.0.min.js"></script>
+    <!--Bootstrap JS-->
+    <script src="js/bootstrap.min.js"></script> 
+    <!--Bootstrap-select JS-->
+    <script src="vendors/bootstrap-select/bootstrap-select.min.js"></script>
+    <!--Flexslider JS-->
+    <script src="vendors/flexslider/js/jquery.flexslider.js"></script>
+    <!--Owl Carousel JS-->
+    <script src="vendors/owl-carousel/owl.carousel.min.js"></script>
+    <!-- Counterup JS -->
+    <script src="js/waypoints.min.js"></script>
+    <script src="vendors/counter/jquery.counterup.min.js"></script>
+    <!--jQuery ui JS-->
+	<script src="js/jquery-ui.min.js"></script>
+   
+    <!--Theme-->
+    <script src="js/theme.js"></script>
+    <script>
+
+        //点击按钮
+        function clickInput1(){
+            document.getElementById('input1').click();
+        }
+    
+        //点击按钮
+        function clickInput2(){
+            document.getElementById('input2').click();
+        }
+    
+        this.facepp = new FACEPP(APIKEY,APISERET,1);
+    
+    </script>
+    
+    
+    
+</body>
+
+</html>
+

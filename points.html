@@ -1,0 +1,454 @@
+﻿<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+    <!-- Required meta tags always come first -->
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="text/javascript" src="facepp_sdk/jquery.min.js"></script>
+    <script type="text/javascript" src="facepp_sdk/exif.js"></script>
+    <script type="text/javascript" src="facepp_sdk/facepp_sdk.js"></script>
+    <script type="text/javascript" src="js/common.js"></script>
+	<title>姿态检测</title>
+  
+    <!-- Favicon -->
+    <link rel="icon" href="img/favicon.png" type="image/x-icon" />
+    <!--Bootstrap-->
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" media="all" /> 
+    <!--Bootstrap-select CSS-->
+	<link rel="stylesheet" type="text/css" href="vendors/bootstrap-select/bootstrap-select.min.css" media="all" />
+    <!--Flexslider CSS-->
+	<link rel="stylesheet" type="text/css" href="vendors/flexslider/css/flexslider.css" media="all" />
+    <!--Owl_Carousel CSS-->
+	<link rel="stylesheet" type="text/css" href="vendors/owl-carousel/owl.carousel.css" media="all" />
+    <!--Linearicons Icons CSS-->
+	<link rel="stylesheet" href="vendors/linearicons/Linearicons.css"> 
+    <!--Font-Awesome CSS-->
+	<link rel="stylesheet" href="vendors/font-awesome/css/font-awesome.min.css"> 
+	<!-- Fonts -->
+	<link href='http://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic,500,500italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
+	
+    <!--Theme Styles CSS-->
+	<link rel="stylesheet" type="text/css" href="css/style.css" media="all" /> 
+	<style>
+
+        #input{
+            opacity: 0;
+        }
+    
+        #bodyContainer{
+            position: absolute;
+            top: 84px;
+            width: 320px;
+            height: 320px;
+            line-height: 320px;
+            left: 0;
+            right: 0;
+            background-color: darkgray;
+            text-align: center;
+            margin: 0 auto;
+        }
+    
+        #preview{
+            vertical-align: middle;
+            max-width: 100%;
+            max-height: 100%;
+        }
+    
+        #text{
+            left: 5%;
+            position: absolute;
+            top: 700px;
+            width: 90%;
+            height: 200px;
+        }
+    
+    </style>
+    
+    <!--[if lt IE 9]>
+    <script src="js/html5shiv.min.js"></script>
+    <script src="js/respond.min.js"></script>
+    <![endif]-->
+    <script>
+        //点击选择图片
+        function clickInput(){
+            document.getElementById('input').click();
+        }
+    </script>
+    
+    <script>
+    
+        var facepp = new FACEPP(APIKEY,APISERET,1);
+    
+        /*
+    
+        // 以图片URL的方式上传图片
+        let dic = {'image_url' : 'https://www.faceplusplus.com.cn/scripts/demoScript/images/demo-pic6.jpg'};
+    
+        facepp.detectFace(dic,success,failed);
+    
+        */
+    
+        // 选择照片
+        function selectImage(input){
+    
+            let imageView = document.getElementById('preview');
+    
+            const reader = new FileReader();
+    
+            reader.readAsDataURL(input.files[0]);
+    
+            reader.onload = function (e) {
+    
+                //移除之前的人体框
+                $("#bodyContainer div").remove();
+    
+                //图片的base64数据
+                const base64Image = e.target.result;
+    
+                //显示图片
+                imageView.src = base64Image;
+    
+                /*
+                //base64方式上传图片
+                let dic = {'image_base64' : base64Image};
+    
+                facepp.detectFace(dic,success,failed);
+    
+                */
+    
+                // 以二进制的方式上传图片
+                // 将base64转为二进制
+                let imageData = facepp.dataURItoBlob(base64Image);
+                //根据业务需求填写的参数
+                let attributes = 'gender,upper_body_cloth,lower_body_cloth';
+                //上传图片,获取结果
+                let dataDic = {'image_file':imageData,'return_attributes':attributes};
+    
+                //调用接口，检测人体
+                facepp.skeletonDetect(dataDic,success,failed);
+            }
+        }
+    
+        //成功的回调
+        function success(e){
+            //显示结果
+            console.log(e);
+            let textView = document.getElementById('text');
+            textView.innerText = JSON.stringify(e,null,"\t");
+    
+            //画上人体框
+            let imageView = document.getElementById('preview');
+    
+            //画人体关键点
+            drawSkeletons(imageView,e.skeletons);
+    
+            const bodies = e.skeletons;
+
+            for (const index in bodies){
+                const body = bodies[index];
+                const body_rectangle = body.body_rectangle;
+    
+                //人体坐标
+                var bodyX = body_rectangle.left;
+                var bodyY = body_rectangle.top;
+                var bodyW = body_rectangle.width;
+                var bodyH = body_rectangle.height;
+    
+                //bodyContainer尺寸
+                var width = 320;
+                var height = 320;
+    
+                //img尺寸
+                var imageW = imageView.width;
+                var imageH = imageView.height;
+    
+                //图片实际尺寸
+                var naturalWidth = imageView.naturalWidth;
+                var naturalHeight = imageView.naturalHeight;
+    
+                console.log('container尺寸' + width + '----' +  height);
+                console.log('img尺寸' + imageW + '----' + imageH);
+                console.log('图片实际尺寸' + naturalWidth + '----' + imageH);
+    
+                const scale = imageW / naturalWidth;
+    
+                console.log('scale > ' + scale);
+    
+                const offsetX = (width - imageW)*0.5;
+                const offsetY = (height - imageH)*0.5;
+    
+                console.log('offsetX：' + offsetX + 'offsetY' + offsetY);
+    
+                //添加人体框
+                $('<div/>').css({
+                    position: 'absolute',
+                    top: bodyY * scale + offsetY,
+                    left: bodyX * scale + offsetX,
+                    height: bodyH * scale,
+                    width: bodyW * scale,
+                    border: '2px solid green',
+                }).appendTo($("#bodyContainer"));
+            }
+        }
+    
+        //失败的回调
+        function failed(e){
+            console.log(e);
+            let textView = document.getElementById('text');
+            textView.innerText = JSON.stringify(e);
+        }
+    
+        //画上关键点
+        function drawSkeletons(imageView,bodies) {
+    
+            //获取图片
+            var base64Image  = imageView.src;
+    
+            const image = new Image();
+    
+            image.onload = () => {
+                const canvas = document.createElement('canvas');
+    
+                const initSize = image.src.length;
+    
+                let width = image.naturalWidth;
+                let height = image.naturalHeight;
+    
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+                // 旋转图片操作
+                EXIF.getData(image, function () {
+                    const orientation = EXIF.getTag(this, 'Orientation');
+                    console.log(`orientation:${orientation}`);
+                    switch (orientation) {
+                        // 正常状态
+                        case 1:
+                            console.log('旋转0°');
+                            canvas.height = height;
+                            canvas.width = width;
+                            ctx.drawImage(image, 0, 0, width, height);
+                            break;
+                        // 旋转90度
+                        case 6:
+                            console.log('旋转90°');
+                            canvas.height = width;
+                            canvas.width = height;
+                            ctx.rotate(Math.PI / 2);
+                            ctx.translate(0, -height);
+                            ctx.drawImage(image, 0, 0, width, height);
+                            break;
+                        // 旋转180°
+                        case 3:
+                            console.log('旋转180°');
+                            canvas.height = height;
+                            canvas.width = width;
+                            ctx.rotate(Math.PI);
+                            ctx.translate(-width, -height);
+                            ctx.drawImage(image, 0, 0, width, height);
+                            break;
+                        // 旋转270°
+                        case 8:
+                            console.log('旋转270°');
+                            canvas.height = width;
+                            canvas.width = height;
+                            ctx.rotate(-Math.PI / 2);
+                            ctx.translate(-width, 0);
+                            ctx.drawImage(image, 0, 0, width, height);
+                            break;
+    
+                        default:
+                            console.log('default 旋转0°');
+                            canvas.height = height;
+                            canvas.width = width;
+                            ctx.drawImage(image, 0, 0, width, height);
+                            break;
+                    }
+    
+                    //画上关键点线条
+                    for (const index in bodies) {
+                        const body = bodies[index];
+                        const body_rectangle = body.body_rectangle;
+                        const landmark = body.landmark;
+    
+                        //人体坐标
+                        var bodyX = body_rectangle.left;
+                        var bodyY = body_rectangle.top;
+                        var bodyW = body_rectangle.width;
+                        var bodyH = body_rectangle.height;
+    
+                        ctx.moveTo(bodyX + landmark.head.x,bodyY + landmark.head.y);
+                        ctx.lineTo(bodyX + landmark.neck.x,bodyY + landmark.neck.y);
+    
+                        //左侧手臂部分
+                        ctx.lineTo(bodyX + landmark.left_shoulder.x,bodyY + landmark.left_shoulder.y);
+                        ctx.lineTo(bodyX + landmark.left_elbow.x,bodyY + landmark.left_elbow.y);
+                        ctx.lineTo(bodyX + landmark.left_hand.x,bodyY + landmark.left_hand.y);
+                        //左侧身体部分
+                        ctx.moveTo(bodyX + landmark.left_shoulder.x,bodyY + landmark.left_shoulder.y);
+                        ctx.lineTo(bodyX + landmark.left_buttocks.x,bodyY + landmark.left_buttocks.y);
+                        ctx.lineTo(bodyX + landmark.left_knee.x,bodyY + landmark.left_knee.y);
+                        ctx.lineTo(bodyX + landmark.left_foot.x,bodyY + landmark.left_foot.y);
+    
+                        //右侧手臂部分
+                        ctx.moveTo(bodyX + landmark.neck.x,bodyY + landmark.neck.y);
+                        ctx.lineTo(bodyX + landmark.right_shoulder.x,bodyY + landmark.right_shoulder.y);
+                        ctx.lineTo(bodyX + landmark.right_elbow.x,bodyY + landmark.right_elbow.y);
+                        ctx.lineTo(bodyX + landmark.right_hand.x,bodyY + landmark.right_hand.y);
+                        //右侧身体部分
+                        ctx.moveTo(bodyX + landmark.right_shoulder.x,bodyY + landmark.right_shoulder.y);
+                        ctx.lineTo(bodyX + landmark.right_buttocks.x,bodyY + landmark.right_buttocks.y);
+                        ctx.lineTo(bodyX + landmark.right_knee.x,bodyY + landmark.right_knee.y);
+                        ctx.lineTo(bodyX + landmark.right_knee.x,bodyY + landmark.right_knee.y);
+    
+                        ctx.lineWidth = 5;//线条宽度
+                        ctx.strokeStyle = 'blue';//线条颜色
+                        ctx.stroke();
+                    }
+                });
+    
+                var newBase64 = canvas.toDataURL('image/jpeg', 1.0);
+                imageView.src = newBase64;
+            };
+            image.src = base64Image;
+        }
+    </script>    
+</head>
+<body> 
+   
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="loader-xbox"></div>
+    </div>
+   
+
+	
+    <!-- Heder_Bottom -->
+    <nav class="navbar navbar-default nav_custom row">
+        <div class="container coustome-container">
+            <!-- Brand and mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main_menu" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand_logo" href="index.html"><img src="img/logo.png" alt="Logo"></a>
+            </div>
+
+            <!-- Collect the nav home, property  -->
+            <div class="row collapse navbar-collapse" id="main_menu">
+                <ul class="nav navbar-nav navbar-menu">
+                    <li><a href="./index.html">首页</a></li>
+                    <li><a href="./compareFace.html">入住识别</a></li>
+                    <li><a href="./points.html">姿态检测</a></li>
+                </ul>
+            </div><!-- End navbar-collapse -->
+        </div> 
+    </nav>  
+    <!-- End Heder_Bottom -->
+    
+	<!-- Banner area -->
+	<section class="banner-area row">
+	    <h2>姿态检测</h2>
+         <div class="bottom-menu-area">
+             <a href="index.html">首页</a>
+             <i class="lnr lnr-chevron-right"></i>
+             <a href="property_list.html">姿态检测</a>
+         </div>
+	</section>
+	<!-- End Banner area -->
+	
+	<!-- Proparty area -->
+    <section class="property_single">
+        <div class="flat">
+            <img src="img/property_single/flat.jpg" alt="">
+        </div>
+            <div class="container coustome-container">
+                <div class="flat_details">
+                    <h1>基于开源库的健身运动姿态检测</h1>
+                    <h5>关键节点</h5>
+                </div>
+                <div class="about_property">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="fun_fact">
+                                <h2>关于姿势检测</h2>
+                                <p>人体姿态是人体重要的生物特征之一，有很多的应用场景，如：步态分析、视频监控、增强现实、人机交互、金融、移动支付、娱乐和游戏、体育科学等。姿态检测能让计算机知道人在做什么、识别出这个人是谁。特别是在监控领域、在摄像头获取到的人脸图像分辨率过小的情况下是一个很好的解决方案，还有在目标身份识别系统中可以作为一项重要的辅助验证手段，达到减小误识别的效果。人体分割使用的方法可以大体分为人体骨骼关键点检测、语义分割等方式实现。这里主要分析与姿态相关的人体骨骼关键点检测。人体骨骼关键点检测输出是人体的骨架信息，一般主要作为人体姿态检测的基础部分，主要用于分割、对齐等。 </p>
+                                <p>人体姿态检测包括动作识别、身份识别两个方面，关键在人体特征提取，人体特征提取主要完成动作特征提取、身份特征提取。人体骨骼关键点检测也称为姿态估计（Pose Estimation），主要检测人体的关键点信息，如关节，五官等，通过关键点描述人体骨骼信息，常用来作为姿态检测、行为分析等的基础部件。人体骨骼关键点检测是一种多方面任务，包含了目标检测、人体骨骼关键点检测、分割等。人体骨骼关键点检测可以分为二维（2D）和三维（3D）的人体骨骼关键点检测；按照检测的方法又能分为自底向上、自顶向下两个方式。</p>
+                            </div>
+                           <div class="additional_details row">
+                               <h2>更多细节</h2>
+                                <!-- Nav tabs -->
+                                <div class="col-md-6 nav_tabs">
+                                    <ul class="nav" role="tablist">
+                                        <li class="active"><a href="#1" data-toggle="tab">目标检测</a></li>
+                                        <li><a href="#2" data-toggle="tab">关键点检测</a></li>
+                                        <li><a href="#3" data-toggle="tab">人体关键点组合</a></li>
+                                        <li><a href="#4" data-toggle="tab">关键信息映射到原图</a></li>
+                                        <li><a href="#5" data-toggle="tab">图形恢复输出</a></li>
+                                    </ul>
+                                </div>
+                                <!-- Tab panes -->
+                                <div class="col-md-6 tab-content">
+                                    <div role="tabpanel" class="tab-pane active" id="1">
+                                        <p>得益于神经网络的发展，在计算机视觉领域，识别的速度、准确度都有了很大的提高。不管是分类、检测、识别目前基本上都以CNN为基础结构，完成对图像数据的直接处理，得出数据，然后再使用特定的算法计算，即可实现如分类、检测、识别等功能。人脸检测、识别、人体骨骼关键点检测、动作识别、行人重识别、步态识别等，基本上都按这个架构来实现。本文分析了人机交互过程姿态识别相关的部分，目前精度比较好的模型基本都使用CNN作为基本特征提取结构。</p>
+                                        <p>人体骨骼关键点检测可以说是人体姿态识别的基础之一，如在单帧图像数据基于特征学习的方法中会用到。不使用人体骨骼关键点检测的方法完成身份的识别有基于多帧图像数据的CNN+RNN方法、步态识别的方法，但都需要精准找出人体的位置。</p>
+                                        <p>人体骨骼关键点检测、基于人体姿态的动作识别、基于人体姿态的身份识别等技术还在不断的发展完善中，各个领域的技术相辅相成、相互借鉴、相互提高。</p>
+                                    </div>
+                                </div>
+                            </div>
+                       </div>
+                    <div class="col-md-4">
+                       <div class="agent">
+                           <h4>测试demo</h4>
+                        
+                            <input id="input" type="file"  name="xaunz" onchange="selectImage(this)"/>
+                            <img id="preview" />
+                        
+                        <div class="sent_message">
+                            <div class="button" onclick=clickInput()><button type="submit" >运动照片上传<i class="lnr lnr-arrow-right"></i></button></div>
+                        </div>
+                        <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+                        <textarea id="text" readonly="readonly" placeholder="Json返回值"></textarea>
+                    </div>
+                    </div>
+                    
+                </div>
+            </div>
+            
+        </div>
+    </section>
+	<!-- End Proparty area -->
+ 
+    <!-- Footer Area -->
+    <footer class="footer_area row">
+    	<div class="copy_right">
+    		Copyright &copy; 2020.壹面云生 All rights reserved.
+    	</div>
+    </footer>
+    <!-- End Footer Area -->
+    
+    <!--jQuery JS-->
+    <script src="js/jquery-1.12.0.min.js"></script>
+    <!--Bootstrap JS-->
+    <script src="js/bootstrap.min.js"></script> 
+    <!--Bootstrap-select JS-->
+    <script src="vendors/bootstrap-select/bootstrap-select.min.js"></script>
+    <!--Flexslider JS-->
+    <script src="vendors/flexslider/js/jquery.flexslider.js"></script>
+    <!--Owl Carousel JS-->
+    <script src="vendors/owl-carousel/owl.carousel.min.js"></script>
+    <!-- Counterup JS -->
+    <script src="js/waypoints.min.js"></script>
+    <script src="vendors/counter/jquery.counterup.min.js"></script>
+    <!--jQuery ui JS-->
+	<script src="js/jquery-ui.min.js"></script>
+   
+    <!--Theme-->
+    <script src="js/theme.js"></script>
+</body>
+</html>
+
