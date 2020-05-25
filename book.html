@@ -6,7 +6,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
  
-	<title></title>
+	<title>预约系统</title>
   
     <!-- Favicon -->
     <link rel="icon" href="img/favicon.png" type="image/x-icon" />
@@ -44,6 +44,95 @@
            width: 50%;
            height: 130px;
        }
+       .banner-posit {
+    width: 50%;
+    padding: 3em;
+    background: #fff;
+    top: 8%;
+    right: 14%;
+}
+.login-form input[type="text"], .login-form input[type="email"],.login-form input[type="IDcard"],.form-control, .login-form textarea {
+    width: 100%;
+    padding: 10px 10px 10px 10px;
+    font-weight: normal;
+    background: none;
+    border: 1px solid #000000;
+    color: #000 !important;
+    outline: none;
+	margin:10px  0;
+    font-size: 0.95em;
+    transition: 0.5s all;
+    -webkit-transition: 0.5s all;
+    -o-transition: 0.5s all;
+    -ms-transition: 0.5s all;
+    -moz-transition: 0.5s all;
+}
+.login-form textarea {
+    resize: none;
+    height: 58px;
+}
+.login-form h3 {
+    color: #ffc107;
+    text-transform: uppercase;
+    font-size: 1.3em;
+    margin: 8px 0;
+    letter-spacing: 1px;
+	font-weight:600;
+}
+.login-form input[type="submit"],.agile_main_grid_left2_grid_bottom a { 
+	background:rgb(255, 193, 7);
+    color: #000;
+    font-size: 14px;
+	margin-top: 10px;
+    border: none;
+    width: 100%;
+    outline: none;
+	letter-spacing: 1px;
+	cursor:pointer;
+    -webkit-appearance: none;
+    padding: 10px 15px;
+	transition:.5s ease-in;
+	-webkit-transition:.5s ease-in;
+	-moz-transition:.5s ease-in;
+	-o-transition:.5s ease-in;
+	-ms-transition:.5s ease-in;
+}
+.login-form input[type="submit"]:hover,.agile_main_grid_left2_grid_bottom a:hover {
+    background:	#03b9f8;
+	color: #fff;
+	transition:.5s ease-in;
+	-webkit-transition:.5s ease-in;
+	-moz-transition:.5s ease-in;
+	-o-transition:.5s ease-in;
+	-ms-transition:.5s ease-in;
+}
+.login-form input[type="submit"], .agile_main_grid_left2_grid_bottom a {
+		margin-top: 0px;
+        padding: 9px 0;
+}
+.left-w3-agile, .right-agileits {
+    width: 48.7%;
+    float: left;
+}
+select.ship-sel {
+    width: 100%;
+    padding: 10px;
+    font-size: 0.95em;
+    background: transparent;
+    outline: none;
+    color: #777;
+    margin: 10px 0;
+    border: 1px solid #000;
+}
+.submain{
+display: -webkit-flex;
+    display: -webkit-box;
+    display: -moz-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    align-items: center;
+}
     </style>   
     <script>
     
@@ -173,11 +262,11 @@
     
      <!-- Banner area -->
      <section class="banner-area row">
-         <h2>入住识别</h2>
+         <h2>预约系统</h2>
          <div class="bottom-menu-area">
              <a href="index.html">首页</a>
              <i class="lnr lnr-chevron-right"></i>
-             <a href="about_one.html">入住识别</a>
+             <a href="about_one.html">预约系统</a>
          </div>
      </section>
      <!-- End Banner area -->
@@ -187,13 +276,21 @@
          <div class="container coustome-container">
              <div class="row company">
                  <div class="company-ing">
-                     <img src="img/company-img.jpg" alt="">
+                     <img src="img/book-2.jpg" alt="">
                  </div>
                  <div class="company-content-area">
-                     <h3>关于人脸识别入住</h3>
-                     <p><strong>人脸识别助力酒店安全管理</strong><br> 酒店人脸识别系统，要求旅客必须实名实人实证，人证一致方可入住。以时下热门的厦门云脉人脸识别系统为例，用户在进行实名认证时，需在设备终端放置本人身份证件，系统摄像头将实时捕捉用户现场人脸图像，并将其传送至后台与用户身份证件上的照片比对。若使用非本人身份证件，系统则会出现相应的预警提示，协助酒店人员在第一时间发现安全隐患。
+                     <h3>关于预约系统</h3>
+                     <p><strong>产品的前景</strong><br>随着社会的发展，外出旅游，出差，酒店的预订是必不可少的，但是传统的预订模式效
+                        率极度低下，占用大量的人力资源，在方便性上不理想，所以现在越来越多人选择网上预订
+                        酒店。本系统满足客户网上预订酒店的需求，尽量做到让客户能身在电脑旁却有着身临酒店
+                        的感觉。
                         <br><br>
-                        <strong>优化旅客入住体验</strong><br>当前台工作人员进行肉眼比对时，目光不可避免地需要在旅客脸上停留一段时间，难免令人产生抵触心理。而人脸识别的非接触性、非强制性就显得整个验证流程更加自然。且系统验证的速度明显高于人工验证，整个登记流程行云流水，提升旅客入住体验的同时，又能提高酒店前台人员的工作效率。
+                        <strong>优化旅客体验</strong><br>
+                        1）用户在预订酒店时，就使用身份证号码预订<br>
+                        2）酒店能够为客户保留酒店至预约时间<br>
+                        3）管理用户可以方便的添加，删除和修改相应的系统用户信息。<br>
+                        4）客房管理员可以方便的添加，删除和修改客房信息。<br>
+                        5）通过身份证智能识别（获取）人脸信息，方便后期入住。
                     </p>
                     
                 </div>
@@ -207,27 +304,83 @@
     <section class="popular-agents-area">
         <div class="container coustome-container">
             <div class="row popular-agents">
-				<h2>Demo 演示</h2> 
-               <div class="col-md-3 col-sm-6 container">
-                   <div class="David-Elton">
-                        <input id="input1" type="file"  onchange="selectImage1(this)"/>
-                        <img id="preview1">
-                        <div class="content-area">
-                            <a><div class="button" id="leftbutton" onclick=clickInput1()>现场照片</div></a>	
+                <h2>预约表单</h2> 
+                <div class="submain">
+                <div class="login-form banner-posit">
+                    <h3>订客房单</h3>
+                    <form action="./book.html" method="post">
+                        <input type="text" name="Name" placeholder="真实姓名" required="">
+                        <input type="text" name="Number" placeholder="电话号码" required="">
+                        <input type="email" name="Email" placeholder="电子邮箱" required="">
+                        <input type="IDcard" name="IDcard" placeholder="身份证号" required="">
+                        <h3 class="w3ls-h3">客房信息选择</h3>
+                        <div class="left-w3-agile">
+                            <select class="ship-sel">
+                                <option>单人间</option>
+                                <option>大床房</option>
+                                <option>标间</option>
+                                <option>三人间</option>
+                                <option>豪华双人间</option>
+                                <option>家庭三人间</option>
+                            </select>
+                            <input type="text" name="City" placeholder="前往城市" required="">
                         </div>
-                   </div>
-               </div>
-               <div class="col-md-3 col-sm-6 container">
-                <div class="David-Elton">
-                    <input id="input2" type="file"  onchange="selectImage2(this)"/>
-                    <img id="preview2">
-                    <div class="content-area">
-                         <a><div class="button" id="rightbutton" onclick=clickInput2()>证件照片</div></a>	
-                    </div>
+                        <div class="right-agileits">
+                            <select class="ship-sel">
+                                    <option>连锁店A</option>
+                                    <option>连锁店B</option>
+                                    <option>连锁店C</option>
+                                    <option>连锁店D</option>
+                                    <option>连锁店E</option>
+                                    <option>连锁店F</option>
+                            </select>
+                            <input type="text" name="Zip/postal code" placeholder="所在地区" required="">
+                        </div>
+                        <div class="clearfix"></div>
+                        <textarea name="message" placeholder="联系地址"></textarea>
+                        <input type="submit" value="提交订单" onclick="alert('信息即将提交')">
+                    </form>	
+                    
                 </div>
-            </div> 
-            <textarea id="text" readonly="readonly" placeholder="Json返回值"></textarea>
-        </div>
+                <div class="login-form banner-posit">
+                    <h3>来访预约</h3>
+                    <form action="./book.html" method="post">
+                        <input type="text" name="Name" placeholder="来访者姓名" required="">
+                        <input type="IDcard" name="IDcard" placeholder="身份证号" required="">
+                        <input type="text" name="Number" placeholder="电话号码" required="">
+                        <input type="text" name="Name" placeholder="房主姓名" required="">
+                        
+                        <h3 class="w3ls-h3">客房信息确认</h3>
+                        <div class="left-w3-agile">
+                            <select class="ship-sel">
+                                <option>单人间</option>
+                                <option>大床房</option>
+                                <option>标间</option>
+                                <option>三人间</option>
+                                <option>豪华双人间</option>
+                                <option>家庭三人间</option>
+                            </select>
+                            <input type="text" name="City" placeholder="所在城市" required="">
+                        </div>
+                        <div class="right-agileits">
+                            <select class="ship-sel">
+                                    <option>连锁店A</option>
+                                    <option>连锁店B</option>
+                                    <option>连锁店C</option>
+                                    <option>连锁店D</option>
+                                    <option>连锁店E</option>
+                                    <option>连锁店F</option>
+                            </select>
+                            <input type="text" name="Zip/postal code" placeholder="所在地区" required="">
+                        </div>
+                        <div class="clearfix"></div>
+                        <textarea name="message" placeholder="联系地址"></textarea>
+                        <input type="submit" value="预约提交" onclick="alert('信息即将提交')">
+                    </form>	
+                    
+                </div>
+              <div>
+            </div>
     </section>
     <!-- End Popular Agents -->
  
